@@ -1,7 +1,6 @@
 <script lang="ts">
   import {createEventDispatcher} from "svelte";
   const dispatch = createEventDispatcher();
-
   function onClick() {
     dispatch("click");
   }
@@ -19,9 +18,7 @@
     fill: #CCC;
     transition: .25s all;
   }
-
   svg:hover {
     fill: #ec407a;
   }
 </style>
-  

@@ -1,37 +1,28 @@
-<svelte:head>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;600;900&display=swap');
-  </style>
-</svelte:head>
-
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import SearchInput from "./lib/SearchInput.svelte";
+  import MovieDetails from "./lib/MovieDetails.svelte";
+  import type {FavMovie} from "./domain/MovieDomain";
+  import { onMount } from "svelte";
+  import * as env from "./env";
   import * as StorageService from "./service/StorageService";
   import * as MovieApi from "./api/MovieApi";
-  import type {FavMovie} from "./domain/Movie";
-  import type { InitResponse } from './domain/Responses';
-  import SearchInput from './lib/SearchInput.svelte';
-  import MovieDetails from './lib/MovieDetails.svelte';
-  import * as env from "./env";
-  
-  const {MID} = StorageService;
 
   let selectedMovieId = 0;
   let favs = [] as FavMovie[];
-  
-  onMount(async function() {
-    const response = await MovieApi.init(StorageService.get(MID));
-    const data = await response.json() as InitResponse;
-    StorageService.set(MID, data.id);
-    favs = data.favs;
-  });
 
-  function onSelectSuggestion(event) {
+  function onMovieSelect(event) {
     const {movie} = event.detail;
     selectedMovieId = movie.id;
   }
 
-  function onMovieAdded(event) {
+  onMount(async function() {
+    const response = await MovieApi.init(StorageService.getMemberId());
+    const data = await response.json();
+    StorageService.setMemberId(data.id);
+    favs = data.favs;
+  });
+
+  function onMovieAdd(event) {
     const {movie} = event.detail;
     favs = [...favs, {movieId: movie.id, comment: movie.poster}];
     selectedMovieId = null;
@@ -40,10 +31,12 @@
 </script>
 
 <main>
-	<SearchInput on:select={onSelectSuggestion} />
+  <SearchInput on:select={onMovieSelect} />
 
   {#if selectedMovieId > 0}
-    <MovieDetails id={selectedMovieId} on:add={onMovieAdded} />
+    <MovieDetails 
+      id={selectedMovieId} 
+      on:add={onMovieAdd}/>
   {/if}
 
   <ul>
@@ -53,11 +46,10 @@
       </li>
     {/each}
   </ul>
-
 </main>
 
 <style>
-  :global(body)  {
+  :global(body) {
     background: #EEE;
     padding: 0;
   }
@@ -66,7 +58,6 @@
     padding: 24px;
     flex-direction: column;
   }
-
   ul {
     margin: 0;
     padding: 20px 0 0;
@@ -74,7 +65,6 @@
     flex-wrap: wrap;
     display: flex;
   }
-
   img {
     height: 300px;
     border-radius: 10px;
@@ -82,7 +72,6 @@
     opacity: .9;
     cursor: pointer;
   }
-
   img:hover {
     opacity: 1;
   }

@@ -1,5 +1,4 @@
-import { Application } from "./deps.ts";
-import {oakCors} from "./deps.ts";
+import { Application, oakCors } from "./deps.ts";
 import {setupRoutes} from "./routes/setup.routes.ts";
 import {movieRoutes} from "./routes/movie.routes.ts";
 import * as logger from "./middleware/logger.ts";

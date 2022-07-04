@@ -10,15 +10,15 @@ function headers(memberId: string = null) {
   return headers;
 }
 
-export function init(memberId: string) {
+export function init(memberId: string = null) {
   return fetch(`${env.apiPath}/init`, {
     headers: headers(memberId)
   })
 }
 
 export function search(key: string) {
-  const path = `${env.apiPath}/movies/search?`;
-  return fetch(path + new URLSearchParams({key}))
+  const path = `${env.apiPath}/movies/search?`
+  return fetch(path + new URLSearchParams({key}));
 }
 
 export function getDetails(id: number) {
@@ -29,7 +29,6 @@ export function addToFavs(memberId: string, movieId: number, comment: string) {
   return fetch(`${env.apiPath}/movies/${movieId}/favs`, {
     method: "POST",
     headers: headers(memberId),
-    body: JSON.stringify({comment})
-  });
+    body: JSON.stringify({comment});
+  })
 }
-

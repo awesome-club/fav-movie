@@ -2,7 +2,7 @@
   import {createEventDispatcher} from "svelte";
   import * as env from "../env";
   import * as MovieApi from "../api/MovieApi";
-  import type { Movie } from "../domain/Movie";
+  import type {Movie} from "../domain/MovieDomain";
 
   const dispatch = createEventDispatcher();
 
@@ -11,35 +11,38 @@
 
   async function keyUp(ev) {
     key = ev.target.value;
-    if (!key) {
-      suggestions = [];
-      return;
-    }
+
     const result = await MovieApi.search(key);
     suggestions = await result.json();
   }
 
-  function onSuggestionClick(movie: Movie) {
-    dispatch("select", { movie });
+  function onSuggestionClick(movie) {
+    dispatch("select", {movie});
     key = "";
     suggestions = [];
   }
+
 </script>
 
 <div class="search">
   <input type="text" on:keyup={keyUp} />
+  
   {#if suggestions.length > 0}
-    <ul>
-      {#each suggestions as suggestion, idx (suggestion.id)}
-        <li class:odd={idx % 2} on:click={() => onSuggestionClick(suggestion)}>
+  <ul>
+      {#each suggestions as suggestion, idx (suggestion.id) }
+        <li
+          class:odd={idx % 2 === 1}
+          on:click={() => onSuggestionClick(suggestion)}>
+
           <img src={env.imageBasePath + suggestion.poster} alt="" />
           <div class="data">
             <h6>{suggestion.title}</h6>
             <p>{suggestion.overview}</p>
           </div>
+
         </li>
       {/each}
-    </ul>
+  </ul>
   {/if}
 </div>
 
@@ -48,7 +51,6 @@
     width: 100%;
     position: relative;
   }
-
   input {
     border: 3px solid #DDD;
     border-radius: 8px;
@@ -61,9 +63,9 @@
     padding: 12px 20px;
     margin: 0;
   }
-
   ul {
     position: absolute;
+    z-index: 1;
     margin: 0;
     padding: 0;
     list-style-type: none;
@@ -73,7 +75,6 @@
     max-height: 420px;
     overflow: auto;
   }
-
   li {
     display: flex;
     cursor: pointer;
@@ -83,34 +84,28 @@
   li.odd {
     background: #FAFAFA;
   }
-
   li:hover {
     background: #e3f6ff;
   }
-
   li:hover img {
     opacity: 1;
   }
-
   img {
     height: 100%;
     opacity: .9;
   }
-
   .data {
     padding: 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
-
   h6 {
     margin: 0;
     font-family: "Montserrat";
     font-size: 18px;
     font-weight: 600;
   }
-
   p {
     font-family: "Montserrat";
     font-size: 13px;

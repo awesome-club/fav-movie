@@ -8,6 +8,6 @@ export interface Movie {
 }
 
 export interface FavMovie {
-  movieId: string;
+  movieId: number;
   comment: string;
 }
